@@ -1,0 +1,30 @@
+{
+  "config": {
+    "chainId": 880,
+    "byzantiumBlock": 0,
+    "constantinopleBlock": 0,
+    "petersburgBlock": 0,
+    "istanbulBlock": 0,
+    "berlinBlock": 0,
+    "londonBlock": 0,
+    "contractSizeLimit": 2147483647,
+    "clique": {
+      "blockperiodseconds": 10,
+      "epochlength": 30000,
+      "createemptyblocks": true
+    }
+  },
+  "nonce": "0x0",
+  "timestamp": "0x0",
+  "difficulty": "0x1",
+  "baseFeePerGas":"0x0",
+  "gasLimit": "0x1fffffffffffff",
+  "gasUsed": "0x0",
+  "extraData": "0x00000000000000000000000000000000000000000000000000000000000000008fa8f365E8B3B66E050F2e0c7221de96fc535D3A0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "parentHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+  "alloc": {
+    "8fa8f365E8B3B66E050F2e0c7221de96fc535D3A": {
+      "balance": "0x56BC75E2D63100000"
+    }
+  }
+}
