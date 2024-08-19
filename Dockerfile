@@ -10,8 +10,11 @@ RUN mkdir config
 # Copy the genesis file into the container
 COPY genesis.json /besu/genesis.json
 
+# Copy the besu.config.toml file into the container
+COPY besu.config.toml /besu/config/besu.config.toml
+
 # **NOTE:: The file with the private key MUST be called 'key'. Otherwise, it will throw an error saying the file content is not valid (This is not stated in the documentation as of 2024.Aug.18)
 COPY .env/secret /besu/config/key
 
-# Initialize the blockchain with the genesis block
-CMD ["--genesis-file=/besu/genesis.json", "--data-path=/besu/data", "--network-id=880", "--node-private-key-file=/besu/config/key", "--rpc-http-enabled", "--rpc-http-api=ETH,NET,CLIQUE", "--rpc-http-cors-origins=all", "--rpc-ws-enabled", "--host-allowlist=*", "--sync-mode=FULL"]
+# Initialize the blockchain with a config file
+CMD ["--config-file=/besu/config/besu.config.toml"]

@@ -1,0 +1,10 @@
+genesis-file="/besu/genesis.json"
+data-path="/besu/data"
+node-private-key-file="/besu/config/key"
+network-id=880
+rpc-http-enabled=true
+rpc-http-api=["ETH","NET","CLIQUE"]
+rpc-http-cors-origins=["all"]
+rpc-ws-enabled=true
+host-allowlist=["*"]
+sync-mode="FULL"
