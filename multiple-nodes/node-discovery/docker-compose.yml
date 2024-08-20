@@ -129,6 +129,30 @@ services:
       --config-file=/besu/config/besu.config.toml
       bootnodes=172.28.0.11:8545,172.28.0.14:8545,172.28.0.15:8545
 
+  node7:
+    build: .
+    image: hyperledger/besu-curl:24.7.1
+    container_name: besu-node7
+    depends_on:
+      - node6
+    ports:
+      - 8505:8545
+      - 8506:8546
+      - 30309:30303   # For node discovering
+    volumes:
+      - ./node7/.data:/besu/data
+      - ./node7/.env:/besu/secret
+      - ./common/config:/besu/config
+      - ./run_besu_with_bootnodes.sh:/besu/scripts/run_besu_with_bootnodes.sh
+    networks:
+      besu-chain:
+        ipv4_address: 172.28.0.17
+    entrypoint: ["/besu/scripts/run_besu_with_bootnodes.sh"]
+    command: >
+      --config-file=/besu/config/besu.config.toml
+      bootnodes=172.28.0.16:8545
+      delay=12
+
 networks:
   besu-chain:
     driver: bridge

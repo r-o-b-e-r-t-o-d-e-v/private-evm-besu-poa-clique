@@ -1,7 +1,20 @@
 #!/bin/bash
 
+# Handles an initial delay based on a delay variable (Default value is 3)
+declare INITIAL_DELAY=3
+for arg in "$@"; do
+    # Check if the argument starts with "delay="
+    if [[ $arg == delay=* ]]; then
+        # Extract the value after the equals sign
+        INITIAL_DELAY="${arg#delay=}"
+    fi
+done
+echo "Initial delay of $INITIAL_DELAY"
+sleep $INITIAL_DELAY
+
+
 declare -r RETRY_SLEEP=3
-declare -r MAX_RETRIES=2
+declare -r MAX_RETRIES=3
 declare -r SKIP_MISSING_BOOTNODES=true
 
 # Filter to keep only Besu arguments
@@ -27,7 +40,6 @@ function print_warning_skipped_bootnode() {
 }
 
 echo ""
-sleep 2
 
 # Process the bootnodes argument into an array
 for arg in "$@"; do
