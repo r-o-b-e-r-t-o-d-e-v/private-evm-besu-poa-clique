@@ -519,4 +519,4 @@ dist
 
 /.idea/
 notes
-/.data/
+**/.data/

@@ -1,0 +1,95 @@
+version: "3.9"
+services:
+  node1:
+    image: hyperledger/besu:24.7.1
+    container_name: besu-node1
+    ports:
+      - 8545:8545
+      - 8546:8546
+      - 30303:30303   # For node discovering
+    volumes:
+      - ./node1/.data:/besu/data
+      - ./node1/.env:/besu/secret
+      - ./common/config:/besu/config
+    networks:
+      besu-chain:
+        ipv4_address: 172.28.0.11
+    command: >
+      --config-file=/besu/config/besu.config.toml
+
+  node2:
+    image: hyperledger/besu:24.7.1
+    container_name: besu-node2
+    ports:
+      - 8555:8545
+      - 8556:8546
+      - 30304:30303   # For node discovering
+    volumes:
+      - ./node2/.data:/besu/data
+      - ./node2/.env:/besu/secret
+      - ./common/config:/besu/config
+    networks:
+      besu-chain:
+        ipv4_address: 172.28.0.12
+    command: >
+      --config-file=/besu/config/besu.config.toml
+      --bootnodes=enode://81d42476e1dc7416ee3db927220798033cf6e8b5d6f4738205eadb565ec4a9629aba85583e168cbec844d0d00bed64a1a1d68cce2466febefcb1ef6aa62c7d44@172.28.0.11:30303
+
+  node3:
+    image: hyperledger/besu:24.7.1
+    container_name: besu-node3
+    ports:
+      - 8565:8545
+      - 8566:8546
+      - 30305:30303   # For node discovering
+    volumes:
+      - ./node3/.data:/besu/data
+      - ./node3/.env:/besu/secret
+      - ./common/config:/besu/config
+    networks:
+      besu-chain:
+        ipv4_address: 172.28.0.13
+    command: >
+      --config-file=/besu/config/besu.config.toml
+      --bootnodes=enode://81d42476e1dc7416ee3db927220798033cf6e8b5d6f4738205eadb565ec4a9629aba85583e168cbec844d0d00bed64a1a1d68cce2466febefcb1ef6aa62c7d44@172.28.0.11:30303
+
+  node4:
+    image: hyperledger/besu:24.7.1
+    container_name: besu-node4
+    ports:
+      - 8575:8545
+      - 8576:8546
+      - 30306:30303   # For node discovering
+    volumes:
+      - ./node4/.data:/besu/data
+      - ./node4/.env:/besu/secret
+      - ./common/config:/besu/config
+    networks:
+      besu-chain:
+        ipv4_address: 172.28.0.14
+    command: >
+      --config-file=/besu/config/besu.config.toml
+
+  node5:
+    image: hyperledger/besu:24.7.1
+    container_name: besu-node5
+    ports:
+      - 8585:8545
+      - 8586:8546
+      - 30307:30303   # For node discovering
+    volumes:
+      - ./node5/.data:/besu/data
+      - ./node5/.env:/besu/secret
+      - ./common/config:/besu/config
+    networks:
+      besu-chain:
+        ipv4_address: 172.28.0.15
+    command: >
+      --config-file=/besu/config/besu.config.toml
+
+networks:
+  besu-chain:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
