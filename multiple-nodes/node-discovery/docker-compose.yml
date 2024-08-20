@@ -33,11 +33,13 @@ services:
         ipv4_address: 172.28.0.12
     command: >
       --config-file=/besu/config/besu.config.toml
-      --bootnodes=enode://81d42476e1dc7416ee3db927220798033cf6e8b5d6f4738205eadb565ec4a9629aba85583e168cbec844d0d00bed64a1a1d68cce2466febefcb1ef6aa62c7d44@172.28.0.11:30303
 
   node3:
-    image: hyperledger/besu:24.7.1
+    build: .
+    image: hyperledger/besu-curl:24.7.1
     container_name: besu-node3
+    depends_on:
+      - node1
     ports:
       - 8565:8545
       - 8566:8546
@@ -46,16 +48,21 @@ services:
       - ./node3/.data:/besu/data
       - ./node3/.env:/besu/secret
       - ./common/config:/besu/config
+      - ./run_besu_with_bootnodes.sh:/besu/scripts/run_besu_with_bootnodes.sh
     networks:
       besu-chain:
         ipv4_address: 172.28.0.13
+    entrypoint: ["/besu/scripts/run_besu_with_bootnodes.sh"]
     command: >
       --config-file=/besu/config/besu.config.toml
-      --bootnodes=enode://81d42476e1dc7416ee3db927220798033cf6e8b5d6f4738205eadb565ec4a9629aba85583e168cbec844d0d00bed64a1a1d68cce2466febefcb1ef6aa62c7d44@172.28.0.11:30303
+      bootnodes=172.28.0.11:8545
 
   node4:
-    image: hyperledger/besu:24.7.1
+    build: .
+    image: hyperledger/besu-curl:24.7.1
     container_name: besu-node4
+    depends_on:
+      - node2
     ports:
       - 8575:8545
       - 8576:8546
@@ -64,15 +71,22 @@ services:
       - ./node4/.data:/besu/data
       - ./node4/.env:/besu/secret
       - ./common/config:/besu/config
+      - ./run_besu_with_bootnodes.sh:/besu/scripts/run_besu_with_bootnodes.sh
     networks:
       besu-chain:
         ipv4_address: 172.28.0.14
+    entrypoint: ["/besu/scripts/run_besu_with_bootnodes.sh"]
     command: >
       --config-file=/besu/config/besu.config.toml
+      bootnodes=172.28.0.12:8545
 
   node5:
-    image: hyperledger/besu:24.7.1
+    build: .
+    image: hyperledger/besu-curl:24.7.1
     container_name: besu-node5
+    depends_on:
+      - node1
+      - node2
     ports:
       - 8585:8545
       - 8586:8546
@@ -81,11 +95,39 @@ services:
       - ./node5/.data:/besu/data
       - ./node5/.env:/besu/secret
       - ./common/config:/besu/config
+      - ./run_besu_with_bootnodes.sh:/besu/scripts/run_besu_with_bootnodes.sh
     networks:
       besu-chain:
         ipv4_address: 172.28.0.15
+    entrypoint: ["/besu/scripts/run_besu_with_bootnodes.sh"]
     command: >
       --config-file=/besu/config/besu.config.toml
+      bootnodes=172.28.0.11:8545,172.28.0.12:8545
+
+  node6:
+    build: .
+    image: hyperledger/besu-curl:24.7.1
+    container_name: besu-node6
+    depends_on:
+      - node1
+      - node4
+      - node5
+    ports:
+      - 8595:8545
+      - 8596:8546
+      - 30308:30303   # For node discovering
+    volumes:
+      - ./node6/.data:/besu/data
+      - ./node6/.env:/besu/secret
+      - ./common/config:/besu/config
+      - ./run_besu_with_bootnodes.sh:/besu/scripts/run_besu_with_bootnodes.sh
+    networks:
+      besu-chain:
+        ipv4_address: 172.28.0.16
+    entrypoint: ["/besu/scripts/run_besu_with_bootnodes.sh"]
+    command: >
+      --config-file=/besu/config/besu.config.toml
+      bootnodes=172.28.0.11:8545,172.28.0.14:8545,172.28.0.15:8545
 
 networks:
   besu-chain:
