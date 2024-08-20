@@ -72,7 +72,7 @@ else
         fi
       else
         found_enode=true
-        ip_address=$(echo "$bootnodes" | cut -d ':' -f 1)
+        ip_address=$(echo "$bootnode" | cut -d ':' -f 1)
         successful_enodes+=("enode://$ENODE_ID@$ip_address:30303")
 
       fi
