@@ -80,8 +80,8 @@ more in detail:
       - 8546:8546
       - 30303:30303   # For node discovering
     volumes:
-      - ./node1/.data:/besu/data
-      - ./node1/.env:/besu/secret
+      - ./nodes/node1/.data:/besu/data
+      - ./nodes/node1/.env:/besu/secret
       - ./common/config:/besu/config
     networks:
       besu-chain:
@@ -132,8 +132,8 @@ So when you want to specify the bootnodes for node you will have to configure li
       - 8576:8546
       - 30306:30303   # For node discovering
     volumes:
-      - ./node4/.data:/besu/data
-      - ./node4/.env:/besu/secret
+      - ./nodes/node4/.data:/besu/data
+      - ./nodes/node4/.env:/besu/secret
       - ./common/config:/besu/config
       - ./run_besu_with_bootnodes.sh:/besu/scripts/run_besu_with_bootnodes.sh
     networks:
