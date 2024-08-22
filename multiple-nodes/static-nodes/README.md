@@ -122,6 +122,19 @@ It will orchestrate the whole generation process by doing:
    use in [step 2](#step-2).
 3. Cleaning up the Docker containers by bringing down the docker-compose.yml.
 
+This script accepts an optional parameter `delay`. Its initial value is set
+to 5 seconds. If you run the script and no static-nodes.json is generated
+you may have to increase the delay to give more time to the nodes be ready
+to be interacted.
+
+Example:
+```
+entrypoint: ["/besu/scripts/static-nodes-generator/static-nodes-generator.sh"]
+command: >
+  nodes=172.28.0.11:8545,172.28.0.12:8545
+  delay=10
+```
+
 ### docker-compose
 
 This docker-compose.yml is the one in charge of the actual blockchain setup.
@@ -247,6 +260,68 @@ In the `alloc` field we are initially funding nodes like this:
 
 ### Peering
 
+The current approach is config the static-nodes.json file with all the nodes
+in the blockchain:
+```
+entrypoint: ["/besu/scripts/static-nodes-generator/static-nodes-generator.sh"]
+command: >
+  nodes=172.28.0.11:8545,172.28.0.12:8545,172.28.0.13:8545,172.28.0.14:8545,172.28.0.15:8545
+  delay=10
+```
 
+Based on that, the resulting peering map should be every node to be connected
+with all the rest of the nodes:
+```
+node1 -> node2, node3, node4, node5 
+node2 -> node1, node3, node4, node5
+node3 -> node1, node2, node4, node5
+node4 -> node1, node2, node3, node5
+node5 -> node1, node2, node3, node4
+```
+
+---
+
+However, if we only configure the nodes node1 and node2 to be set as static
+nodes:
+```
+entrypoint: ["/besu/scripts/static-nodes-generator/static-nodes-generator.sh"]
+command: >
+  nodes=172.28.0.11:8545,172.28.0.12:8545
+  delay=10
+```
+
+The peering map would end up being as follows:
+```
+node1 -> node2, node3, node4, node5 
+node2 -> node1, node3, node4, node5
+node3 -> node1, node2
+node4 -> node1, node2
+node5 -> node1, node2
+```
+
+Nodes node3, node4 and node5 only know the nodes1 and node2 since both are the
+only ones specified in the static-nodes.json.
+
+Nodes node1 and node2 know the rest of the chain because the others nodes are
+peering with them.
+
+_**NOTE_: This approach takes a few minutes until the nodes do the peering.
+Probably because having such a low amount of static nodes will make things
+hard for Besu to handle the peering.
+
+---
+
+__Hybrid approach__
+
+Since this example aims to cover an only static nodes approach, p2p discovering
+is disabled.
+
+However, it's possible to make a hybrid solution. If p2p discovering were
+active for this last mention scenario, the peering map would end up in all
+nodes peering with all the rest of the nodes in the chain.
+
+This is because, for example, node3 would initially only peer with node1 and
+node2 but, eventually, node4 and node5 will peer with node1 (or node2), and
+this will allow node3 to peer node4 and node5 via node1 (or node2).
 
 ---

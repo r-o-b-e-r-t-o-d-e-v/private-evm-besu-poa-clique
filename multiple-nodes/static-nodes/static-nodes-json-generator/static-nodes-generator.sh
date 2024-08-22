@@ -11,8 +11,8 @@ echo ""
 # input variables
 ALL_ARGS="$@"
 
-MAX_RETRIES=1
-RETRY_SLEEP=1
+MAX_RETRIES=3
+RETRY_SLEEP=3
 INITIAL_DELAY=5
 
 # Grabbing the 'delay' parameter
