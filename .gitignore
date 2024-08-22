@@ -521,3 +521,4 @@ dist
 notes
 **/.data/
 **/.output/
+**/generated/
