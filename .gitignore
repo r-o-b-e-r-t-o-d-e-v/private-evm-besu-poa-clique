@@ -520,3 +520,4 @@ dist
 /.idea/
 notes
 **/.data/
+**/.output/

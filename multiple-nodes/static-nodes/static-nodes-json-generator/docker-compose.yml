@@ -1,0 +1,103 @@
+version: "3.9"
+services:
+  node1:
+    image: hyperledger/besu:24.7.1
+    container_name: besu-node1
+    ports:
+      - 8545:8545
+    volumes:
+      - ./.data/node1/.data:/besu/data
+      - ./.data/node1/key:/besu/secret
+      - ../common/config:/besu/config
+    networks:
+      besu-chain:
+        ipv4_address: 172.28.0.11
+    command: >
+      --config-file=/besu/config/besu.config.toml
+
+  node2:
+    image: hyperledger/besu:24.7.1
+    container_name: besu-node2
+    ports:
+      - 8555:8545
+    volumes:
+      - ./.data/node2/.data:/besu/data
+      - ./.data/node2/key:/besu/secret
+      - ../common/config:/besu/config
+    networks:
+      besu-chain:
+        ipv4_address: 172.28.0.12
+    command: >
+      --config-file=/besu/config/besu.config.toml
+
+  node3:
+    image: hyperledger/besu:24.7.1
+    container_name: besu-node3
+    ports:
+      - 8565:8545
+    volumes:
+      - ./.data/node3/.data:/besu/data
+      - ./.data/node3/key:/besu/secret
+      - ../common/config:/besu/config
+    networks:
+      besu-chain:
+        ipv4_address: 172.28.0.13
+    command: >
+      --config-file=/besu/config/besu.config.toml
+
+  node4:
+    image: hyperledger/besu:24.7.1
+    container_name: besu-node4
+    ports:
+      - 8575:8545
+    volumes:
+      - ./.data/node4/.data:/besu/data
+      - ./.data/node4/key:/besu/secret
+      - ../common/config:/besu/config
+    networks:
+      besu-chain:
+        ipv4_address: 172.28.0.14
+    command: >
+      --config-file=/besu/config/besu.config.toml
+
+  node5:
+    image: hyperledger/besu:24.7.1
+    container_name: besu-node5
+    ports:
+      - 8585:8545
+    volumes:
+      - ./.data/node5/.data:/besu/data
+      - ./.data/node5/key:/besu/secret
+      - ../common/config:/besu/config
+    networks:
+      besu-chain:
+        ipv4_address: 172.28.0.15
+    command: >
+      --config-file=/besu/config/besu.config.toml
+
+  enodes-collector:
+    image: alpine:3.20.2
+    container_name: enodes-collector
+    depends_on:
+      - node1
+      - node2
+      - node3
+      - node4
+      - node5
+    volumes:
+      - ./static-nodes-generator.sh:/besu/scripts/static-nodes-generator/static-nodes-generator.sh
+      - ./.output:/besu/scripts/static-nodes-generator/output
+    networks:
+      besu-chain:
+        ipv4_address: 172.28.0.200
+    entrypoint: ["/besu/scripts/static-nodes-generator/static-nodes-generator.sh"]
+    command: >
+      nodes=172.28.0.11:8545,172.28.0.12:8545,172.28.0.13:8545,172.28.0.14:8545,172.28.0.15:8545
+      delay=10
+
+networks:
+  besu-chain:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
