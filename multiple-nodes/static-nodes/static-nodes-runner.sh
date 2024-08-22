@@ -1,9 +1,23 @@
 #!/bin/sh
 
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # Define the path to the docker-compose.yml file
 COMPOSE_FILE="$SCRIPT_DIR/docker-compose.yml"
+
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+
+
+# Quick checking to make sure Docker is running
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+if ! docker info > /dev/null 2>&1; then
+    echo "Docker daemon is not running. Please start Docker and try again."
+    exit 1
+fi
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+
 
 # Step 1: Bring down the Docker Compose services in case they are running
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
