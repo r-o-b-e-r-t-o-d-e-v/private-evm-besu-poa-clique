@@ -2,7 +2,7 @@
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-# Define the path to your docker-compose.yml file
+# Define the path to the docker-compose.yml file
 COMPOSE_FILE="$SCRIPT_DIR/static-nodes-json-generator/docker-compose.yml"
 
 # Step 1: Bring down the Docker Compose services in case they are running
