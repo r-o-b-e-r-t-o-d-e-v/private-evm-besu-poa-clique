@@ -11,8 +11,14 @@
   - [Static nodes JSON generator folder](#static-nodes-json-generator-folder)
     - [docker-compose](#docker-compose)
     - [static-nodes-generator-script](#static-nodes-generator-script)
-  - [static-nodes-orchestrator-script](#static-nodes-orchestrator-script)
+  - [static-nodes-generator-orchestrator-script](#static-nodes-generator-orchestrator-script)
+  - [docker-compose](#docker-compose-1)
+  - [static-nodes-runner-script](#static-nodes-runner-script)
 - [Static nodes JSON file generation](#static-nodes-json-file-generation)
+- [Running the blockchain](#running-the-blockchain)
+- [Initial state of the chain](#initial-state-of-the-chain)
+  - [Validators](#validators)
+  - [Peering](#peering)
 
 ---
 
@@ -53,9 +59,40 @@ The file structure is as follows:
 
 ### Nodes folders
 
+There are plain folders that will hold data of each specific node. However,
+these folders are ignored by git so If you cloned the repository in local
+you won't see them directly. Let's dig in:
+
+- .data: The data folder is a bridge between the docker container and the
+  project. It will hold the data related to the blockchain. There is no need
+  to manually create it, it will be automatically handled by Docker volumes.
+
+- .env/key: This is a file that contains the private key of the node. With
+  this file we have two options. You can manually generate your desired
+  private key with any tool you like, then paste it removing the '0x' prefix.
+  The second approach is avoiding self intervention, letting Docker handle
+  it automatically. This will make Besu to create a PK for you but the
+  drawback is it won't give you the address or passphrase corresponding to
+  the PK, so you need this information to use it in any other place, like
+  setting the node as a validator, maybe the first approach is more convenient.
 
 ### Common folder
 
+This folder have a couple of files: `config/besu.config.toml` and `config/genesis.json`
+which are shared by all the nodes in the chain.
+
+The _besu.config.toml_ contains the Besu specific paramaters that will be used when
+starting the node.
+
+The _genesis.json_ file contains information needed by to deploy the genesis block,
+as well as some parameters for Clique config.
+
+Apart from this, there is another file (`static-nodes.json`) that will be
+generated when running the [static-nodes-generator-orchestrator.sh](#static-nodes-generator-orchestrator-script)
+script.
+
+This file will be placed under the folder `/generated` and is ignored by git due
+to the nature of its creation being automatically done via script.
 
 ### Static nodes JSON generator folder
 
@@ -71,7 +108,7 @@ The file structure is as follows:
   This script handles the enodes collecting and after that will generate a
   static-nodes.json file in a temporal folder called `/.output`.
 
-### static-nodes-orchestrator-script
+### static-nodes-generator-orchestrator-script
 
 This script is quite simply by useful, taking the static-nodes.json
 generation process to the next level of automation.
@@ -84,6 +121,25 @@ It will orchestrate the whole generation process by doing:
    to [`/common/config`](#common-folder) so make it completely ready to
    use in [step 2](#step-2).
 3. Cleaning up the Docker containers by bringing down the docker-compose.yml.
+
+### docker-compose
+
+This docker-compose.yml is the one in charge of the actual blockchain setup.
+
+### static-nodes-runner-script
+
+The `static-nodes-runner.sh` is a simple script that wraps the call to the
+docker-compose.yml.
+
+What it does under the hood is just making sure of
+every node in the [`/nodes`](#nodes-folders) has its own static-nodes.json
+file in their `/.data` folder by copying it from the one in
+`/common/config/generated/static-nodes.json`.
+
+Then it runs the docker-compose.yml as you would do manually.
+
+So for running this script you also need to check your Docker daemon is
+up and running.
 
 ---
 
@@ -106,10 +162,91 @@ Up this point the generation is completely valid and independent, you can
 take the generated file and use it as you wish.
 
 However, instead of running up the docker-compose.yml by your own, it's recommended
-to simply run the [orchestrator script](#static-nodes-orchestrator-script).
+to simply run the [orchestrator script](#static-nodes-generator-orchestrator-script).
 
 This will reduce the manual intervention needed into just running a single
 CLI command, copying the json file into the required place for step 2 working
 seamlessly and also cleaning up the Docker containers.
+
+---
+
+## Running the blockchain
+
+### Step 1: Generating the static-nodes.json
+
+If you are in project's root folder, you should go to the example's root:
+```
+cd multiple-nodes/static-nodes
+```
+
+To run the process that generates the static-nodes.json you can run:
+```
+./static-nodes-generator-orchestrator.sh
+```
+
+It should generate the file at: `/common/config/generated/static-nodes.json`
+
+---
+
+### Step 2: Actual blockchain deployment
+
+To deploy the blockchain use the script:
+```
+./static-nodes-runner.sh
+```
+
+or if you prefer directly running the docker-compose.yml (You first should
+check every node in `/nodes` folder has one copy of the static-nodes.json
+file under `./data`):
+
+```
+docker-compose up
+```
+
+---
+
+__Some useful commands to clean up the temporal files and folders__:
+
+To remove `.data` folder (subdirectories included):
+```
+find . -type d -name '.data' -exec rm -rf {} +
+```
+
+To remove `.output` folder (subdirectories included):
+```
+find . -type d -name '.output' -exec rm -rf {} +
+```
+
+To remove `generated` folder (subdirectories included):
+```
+find . -type d -name 'generated' -exec rm -rf {} +
+```
+
+Altogether:
+```
+find . -type d -name '.data' -exec rm -rf {} +
+find . -type d -name '.output' -exec rm -rf {} +
+find . -type d -name 'generated' -exec rm -rf {} +
+```
+
+---
+
+## Initial state of the chain
+
+### Validators
+
+As stated in the `extradata` field in `genesis.json`, there will be only
+two validators in the chain. The addresses correspond to the nodes:
+- node1
+- node3
+
+Validators doesn't necessary need to have any funds (node7 has 0 ETH).
+In the `alloc` field we are initially funding nodes like this:
+- node1: 100 ETH
+- node2: 27.5 ETH
+
+### Peering
+
+
 
 ---
