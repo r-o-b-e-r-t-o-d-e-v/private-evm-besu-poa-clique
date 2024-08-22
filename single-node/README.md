@@ -2,6 +2,14 @@
 
 ---
 
+# Table of contents
+- [Overview](#overview)
+- [Structure](#structure)
+- [Running the node](#running-the-node)
+- [Data](#data)
+
+---
+
 ## Overview
 
 The single node example consist in the creation of a Docker image extending
